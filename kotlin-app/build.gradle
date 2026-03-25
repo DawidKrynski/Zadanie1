@@ -1,0 +1,44 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0'
+    id 'application'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // paczka JDBC SQLite - wymagana w zadaniu
+    implementation 'org.xerial:sqlite-jdbc:3.47.1.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+}
+
+application {
+    mainClass = 'MainKt'
+}
+
+// kompilacja pod Java 8
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+// fat JAR - wszystkie zaleznosci w jednym pliku zeby mozna bylo odpalic przez java -jar
+jar {
+    archiveFileName = 'app.jar'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'MainKt'
+    }
+
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
