@@ -1,0 +1,21 @@
+# docker-compose dla zadania 1
+# Autor: Dawid Kryński (dawidk12)
+
+services:
+  # kontener z Pythonem 3.10 na Ubuntu 22.04
+  python-app:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    image: dawidk12/python-ubuntu:latest
+    container_name: python-ubuntu
+
+  # kontener z Java 8 + Kotlin + Gradle + SQLite JDBC na Ubuntu 24.04
+  kotlin-app:
+    build:
+      context: ./kotlin-app
+      dockerfile: Dockerfile
+    image: dawidk12/kotlin-hello-world:latest
+    container_name: kotlin-hello-world
+    # domyslnie odpala java -jar, ale mozna tez:
+    # command: gradle run --no-daemon
