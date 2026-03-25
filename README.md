@@ -3,19 +3,19 @@
 Autor: Dawid Kryński (dawidk12)
 
 ✅ 3.0 Obraz Ubuntu z Pythonem w wersji 3.10
-[Link do commita 1]([#](https://github.com/DawidKrynski/Zadanie1/commit/d482d7decbfb5679e5457be09f0647ce068c2774))
+[Link do commita 1](https://github.com/DawidKrynski/Zadanie1/commit/d482d7decbfb5679e5457be09f0647ce068c2774)
 
 ✅ 3.5 Obraz ubuntu:24.04 z Javą 8 oraz Kotlinem
-[Link do commita 2]([#](https://github.com/DawidKrynski/Zadanie1/commit/773cc65d82f6409dbddc635b10b9a7587d8da90e))
+[Link do commita 2](https://github.com/DawidKrynski/Zadanie1/commit/773cc65d82f6409dbddc635b10b9a7587d8da90e)
 
 ✅ 4.0 Dodanie najnowszego Gradle'a oraz paczki JDBC SQLite w projekcie Gradle (build.gradle)
-[Link do commita 3]([#](https://github.com/DawidKrynski/Zadanie1/commit/e7df2271fb5b629062515a5322787e61cd17a50c))
+[Link do commita 3](https://github.com/DawidKrynski/Zadanie1/commit/e7df2271fb5b629062515a5322787e61cd17a50c)
 
 ✅ 4.5 Przykład HelloWorld + uruchomienie przez CMD (`java -jar`) oraz Gradle (`gradle run`)
-[Link do commita 4]([#](https://github.com/DawidKrynski/Zadanie1/commit/e72ff69fffa79a348bafd5ead8de83c72a8670ca))
+[Link do commita 4](https://github.com/DawidKrynski/Zadanie1/commit/e72ff69fffa79a348bafd5ead8de83c72a8670ca)
 
 ✅ 5.0 Konfiguracja docker-compose
-[Link do commita 5]([#](https://github.com/DawidKrynski/Zadanie1/commit/7757d02eec569060a67d2486290909b2b8542244))
+[Link do commita 5](https://github.com/DawidKrynski/Zadanie1/commit/7757d02eec569060a67d2486290909b2b8542244)
 
 ## Obrazy na Docker Hub
 
@@ -38,5 +38,4 @@ docker run dawidk12/kotlin-hello-world
 # uruchomienie HelloWorld przez gradle (wewnatrz kontenera)
 docker run dawidk12/kotlin-hello-world gradle run --no-daemon
 ```
-
-Kod: [Link do repozytorium](#)
+Kod: [Link do repozytorium](https://www.google.com/search?q=https://github.com/DawidKrynski/Zadanie1)
