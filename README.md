@@ -38,4 +38,4 @@ docker run dawidk12/kotlin-hello-world
 # uruchomienie HelloWorld przez gradle (wewnatrz kontenera)
 docker run dawidk12/kotlin-hello-world gradle run --no-daemon
 ```
-Kod: [Link do repozytorium](https://www.google.com/search?q=https://github.com/DawidKrynski/Zadanie1)
+Kod: [Link do repozytorium](https://github.com/DawidKrynski/Zadanie1)
