@@ -20,6 +20,13 @@ Ngrok:
 bash ngrok.sh
 ```
 
+## Realizacja wymagań
+
+- **3.0 + 3.5** — Kontroler produktów z endpointami CRUD: [d4918b3](http://github.com/DawidKrynski/Zadanie2/commit/d4918b3)
+- **4.0** — Kontrolery kategorii i koszyka: [b59ee46](http://github.com/DawidKrynski/Zadanie2/commit/b59ee46)
+- **4.5** — Dockerfile i skrypt ngrok: [6030705](http://github.com/DawidKrynski/Zadanie2/commit/6030705)
+- **5.0** — CORS dla dwóch hostów, README: [b9b49ad](http://github.com/DawidKrynski/Zadanie2/commit/b9b49ad)
+
 ## Endpointy
 
 | Metoda | Produkty | Kategorie | Koszyk |
