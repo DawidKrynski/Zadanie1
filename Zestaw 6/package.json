@@ -1,0 +1,13 @@
+{
+  "name": "zestaw6-cypress",
+  "version": "1.0.0",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:browserstack": "browserstack-cypress run --sync"
+  },
+  "devDependencies": {
+    "cypress": "^13.6.0",
+    "browserstack-cypress-cli": "^1.19.0"
+  }
+}

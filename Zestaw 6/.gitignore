@@ -1,0 +1,35 @@
+node_modules/
+
+# Cypress artifacts
+cypress/downloads/
+cypress/screenshots/
+cypress/videos/
+cypress/cache/
+.cypress-cache/
+
+# BrowserStack and local env secrets
+browserstack.local.json
+browserstack.credentials.json
+.env
+.env.*
+!.env.example
+
+# Logs and reports
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage/
+nyc_output/
+reports/
+
+# Go build artifacts used by Zestaw4 tests
+Zestaw4/app.exe
+Zestaw4/main
+Zestaw4/*.exe
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
