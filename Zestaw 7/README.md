@@ -2,11 +2,11 @@
 
 Aplikacja z `Zestaw 5` zostala przygotowana do analizy w SonarCloud jako dwa
 osobne projekty: serwer Go/Echo oraz klient React. Kod serwera jest dodatkowo
-sprawdzany lokalnie przez `golangci-lint` w hooku gita.
+sprawdzany lokalnie przez `golangci-lint` w hooku gita z katalogu tego zadania.
 
 ## Zakres
 
-- 3.0 linter dla aplikacji serwerowej w hooku gita: `.githooks/pre-commit`
+- 3.0 linter dla aplikacji serwerowej w hooku gita: `Zestaw 7/githooks/pre-commit`
 - 3.5 poprawki bledow w kodzie serwera
 - 4.0 poprawki code smells w kodzie serwera
 - 4.5 poprawki podatnosci i security hotspots w kodzie serwera
@@ -41,21 +41,25 @@ DawidKrynski_Zadanie1_server
 DawidKrynski_Zadanie1_client
 ```
 
-W GitHub Actions trzeba ustawic sekret:
+Do uruchomienia analizy w SonarCloud trzeba ustawic token:
 
 ```text
 SONAR_TOKEN
 ```
 
-Workflow znajduje sie w `.github/workflows/sonarcloud.yml` i uruchamia osobna
-analize dla `Zestaw 5/server` oraz `Zestaw 5/client`.
+Konfiguracja skanowania znajduje sie w plikach `sonar-project.properties`:
+
+```text
+Zestaw 5/server/sonar-project.properties
+Zestaw 5/client/sonar-project.properties
+```
 
 ## Uruchomienie lokalne
 
 Hook gita:
 
 ```bash
-git config core.hooksPath .githooks
+git config core.hooksPath "Zestaw 7/githooks"
 ```
 
 Serwer:
