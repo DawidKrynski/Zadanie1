@@ -11,7 +11,9 @@ import (
 
 func GetCategories(c echo.Context) error {
 	var categories []models.Category
-	database.DB.Find(&categories)
+	if err := database.DB.Find(&categories).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to load categories"})
+	}
 	return c.JSON(http.StatusOK, categories)
 }
 
@@ -29,7 +31,9 @@ func CreateCategory(c echo.Context) error {
 	if err := c.Bind(&category); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
-	database.DB.Create(&category)
+	if err := database.DB.Create(&category).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to create category"})
+	}
 	return c.JSON(http.StatusCreated, category)
 }
 
@@ -42,7 +46,9 @@ func UpdateCategory(c echo.Context) error {
 	if err := c.Bind(&category); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
-	database.DB.Save(&category)
+	if err := database.DB.Save(&category).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to update category"})
+	}
 	return c.JSON(http.StatusOK, category)
 }
 
@@ -52,6 +58,8 @@ func DeleteCategory(c echo.Context) error {
 	if err := database.DB.First(&category, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Category not found"})
 	}
-	database.DB.Delete(&category)
+	if err := database.DB.Delete(&category).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete category"})
+	}
 	return c.JSON(http.StatusNoContent, nil)
 }

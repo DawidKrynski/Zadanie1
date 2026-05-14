@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"os"
+	"strings"
+
 	"zadanie3/controllers"
 	"zadanie3/database"
 
@@ -9,15 +13,16 @@ import (
 )
 
 func main() {
-	database.Init()
+	if err := database.Init(); err != nil {
+		log.Fatalf("failed to initialise database: %v", err)
+	}
 
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// CORS - allow React dev server and any origin in production
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173", "http://localhost:3000", "*"},
+		AllowOrigins: allowedOrigins(),
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{"Content-Type", "Authorization", "Accept"},
 	}))
@@ -44,5 +49,27 @@ func main() {
 	e.DELETE("/carts/:id/items/:itemId", controllers.DeleteCartItem)
 	e.DELETE("/carts/:id", controllers.DeleteCart)
 
+	e.POST("/orders", controllers.CreateOrder)
+
 	e.Logger.Fatal(e.Start(":8080"))
+}
+
+func allowedOrigins() []string {
+	origins := os.Getenv("ALLOWED_ORIGINS")
+	if origins == "" {
+		return []string{"http://localhost:5173", "http://localhost:3000"}
+	}
+
+	values := strings.Split(origins, ",")
+	allowed := make([]string, 0, len(values))
+	for _, origin := range values {
+		origin = strings.TrimSpace(origin)
+		if origin != "" {
+			allowed = append(allowed, origin)
+		}
+	}
+	if len(allowed) == 0 {
+		return []string{"http://localhost:5173", "http://localhost:3000"}
+	}
+	return allowed
 }

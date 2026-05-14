@@ -8,7 +8,6 @@ import './index.css';
 
 export default function App() {
   return (
-    // CartProvider wraps everything so all components share cart state via useCart hook
     <CartProvider>
       <BrowserRouter>
         <Navbar />

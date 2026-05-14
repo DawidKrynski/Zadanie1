@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../context/CartContext';
 
 export default function Products() {
   const [filters, setFilters] = useState({ in_stock: '', min_price: '', max_price: '' });
-  const { products, loading, error } = useProducts(
-    // Only pass non-empty filter values
-    Object.fromEntries(Object.entries(filters).filter(([, v]) => v !== ''))
-  );
+  const activeFilters = useMemo(() => (
+    Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== ''))
+  ), [filters]);
+  const { products, loading, error } = useProducts(activeFilters);
   const { addItem } = useCart();
   const [added, setAdded] = useState(null);
 
@@ -21,14 +21,13 @@ export default function Products() {
     <div className="page">
       <h1>Products</h1>
 
-      {/* Filters */}
       <div className="filters">
         <label>
           Min price
           <input
             type="number"
             value={filters.min_price}
-            onChange={e => setFilters(f => ({ ...f, min_price: e.target.value }))}
+            onChange={event => setFilters(current => ({ ...current, min_price: event.target.value }))}
             placeholder="0"
           />
         </label>
@@ -37,7 +36,7 @@ export default function Products() {
           <input
             type="number"
             value={filters.max_price}
-            onChange={e => setFilters(f => ({ ...f, max_price: e.target.value }))}
+            onChange={event => setFilters(current => ({ ...current, max_price: event.target.value }))}
             placeholder="9999"
           />
         </label>
@@ -45,13 +44,16 @@ export default function Products() {
           <input
             type="checkbox"
             checked={filters.in_stock === 'true'}
-            onChange={e => setFilters(f => ({ ...f, in_stock: e.target.checked ? 'true' : '' }))}
+            onChange={event => setFilters(current => ({
+              ...current,
+              in_stock: event.target.checked ? 'true' : '',
+            }))}
           />
           In stock only
         </label>
       </div>
 
-      {loading && <p className="status">Loading…</p>}
+      {loading && <p className="status">Loading...</p>}
       {error && <p className="status error">{error}</p>}
 
       <div className="product-grid">
@@ -61,16 +63,17 @@ export default function Products() {
             {product.category && <span className="badge">{product.category.name}</span>}
             <p className="desc">{product.description}</p>
             <div className="card-footer">
-              <strong>${product.price.toFixed(2)}</strong>
+              <strong>${Number(product.price ?? 0).toFixed(2)}</strong>
               <span className={product.quantity > 0 ? 'in-stock' : 'out-stock'}>
                 {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
               </span>
               <button
+                type="button"
                 disabled={product.quantity === 0 || added === product.ID}
                 onClick={() => handleAdd(product)}
                 className="btn-primary"
               >
-                {added === product.ID ? '✓ Added' : 'Add to cart'}
+                {added === product.ID ? 'Added' : 'Add to cart'}
               </button>
             </div>
           </div>

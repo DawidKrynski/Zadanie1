@@ -1,0 +1,64 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  server:
+    name: server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Zestaw 5/server
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: Zestaw 5/server/go.mod
+
+      - run: go test ./... -coverprofile=coverage.out
+
+      - uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: Zestaw 5/server
+
+  client:
+    name: client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Zestaw 5/client
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Zestaw 5/client/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: Zestaw 5/client

@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../api';
 
-// Custom hook encapsulating product fetching logic so components stay clean
-export function useProducts(filters = {}) {
+const emptyFilters = {};
+
+export function useProducts(filters = emptyFilters) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,12 +14,12 @@ export function useProducts(filters = {}) {
     try {
       const { data } = await api.get('/products', { params: filters });
       setProducts(data);
-    } catch (err) {
+    } catch {
       setError('Failed to fetch products');
     } finally {
       setLoading(false);
     }
-  }, [JSON.stringify(filters)]);
+  }, [filters]);
 
   useEffect(() => {
     fetchProducts();

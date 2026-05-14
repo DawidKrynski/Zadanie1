@@ -1,13 +1,12 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
 import api from '../api';
 
 const CartContext = createContext(null);
 
-// Reducer keeps cart state predictable and easy to share across all components
 function cartReducer(state, action) {
   switch (action.type) {
     case 'SET_CART':
-      return { ...state, cart: action.payload, loading: false };
+      return { ...state, cart: action.payload, loading: false, error: null };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':
@@ -28,59 +27,65 @@ const initialState = {
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Initialise a server-side cart on first mount and persist its ID in localStorage
-  useEffect(() => {
-    const savedCartId = localStorage.getItem('cartId');
-    if (savedCartId) {
-      fetchCart(savedCartId);
-    } else {
-      createCart();
-    }
+  const createCart = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    const { data } = await api.post('/carts');
+    localStorage.setItem('cartId', data.ID);
+    dispatch({ type: 'SET_CART', payload: data });
+    return data;
   }, []);
 
-  async function createCart() {
+  const fetchCart = useCallback(async id => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      const { data } = await api.post('/carts');
-      localStorage.setItem('cartId', data.ID);
-      dispatch({ type: 'SET_CART', payload: data });
-    } catch (err) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to create cart' });
-    }
-  }
+    const { data } = await api.get(`/carts/${id}`);
+    dispatch({ type: 'SET_CART', payload: data });
+    return data;
+  }, []);
 
-  async function fetchCart(id) {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    try {
-      const { data } = await api.get(`/carts/${id}`);
-      dispatch({ type: 'SET_CART', payload: data });
-    } catch {
-      // Cart may have been deleted on server — create a fresh one
-      createCart();
+  useEffect(() => {
+    async function initCart() {
+      const savedCartId = localStorage.getItem('cartId');
+      try {
+        if (savedCartId) {
+          await fetchCart(savedCartId);
+          return;
+        }
+        await createCart();
+      } catch {
+        localStorage.removeItem('cartId');
+        try {
+          await createCart();
+        } catch {
+          dispatch({ type: 'SET_ERROR', payload: 'Failed to create cart' });
+        }
+      }
     }
-  }
+
+    initCart().catch(() => {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to create cart' });
+    });
+  }, [createCart, fetchCart]);
 
   async function addItem(productId, quantity = 1) {
-    if (!state.cart) return;
+    if (!state.cart) return null;
     const { data } = await api.post(`/carts/${state.cart.ID}/items`, {
       product_id: productId,
       quantity,
     });
-    // Reload full cart to get updated items with product details
-    fetchCart(state.cart.ID);
+    await fetchCart(state.cart.ID);
     return data;
   }
 
   async function updateItem(itemId, quantity) {
     if (!state.cart) return;
     await api.put(`/carts/${state.cart.ID}/items/${itemId}`, { quantity });
-    fetchCart(state.cart.ID);
+    await fetchCart(state.cart.ID);
   }
 
   async function removeItem(itemId) {
     if (!state.cart) return;
     await api.delete(`/carts/${state.cart.ID}/items/${itemId}`);
-    fetchCart(state.cart.ID);
+    await fetchCart(state.cart.ID);
   }
 
   async function clearCart() {
@@ -88,12 +93,11 @@ export function CartProvider({ children }) {
     await api.delete(`/carts/${state.cart.ID}`);
     localStorage.removeItem('cartId');
     dispatch({ type: 'CLEAR_CART' });
-    createCart();
+    await createCart();
   }
 
-  // Derived value — total price of all items
   const cartTotal = state.cart?.items?.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
     0
   ) ?? 0;
 
@@ -104,7 +108,6 @@ export function CartProvider({ children }) {
   );
 }
 
-// Custom hook — components use this to access cart state and actions
 export function useCart() {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error('useCart must be used within CartProvider');
