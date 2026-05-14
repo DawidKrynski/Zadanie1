@@ -11,7 +11,9 @@ import (
 
 func CreateCart(c echo.Context) error {
 	cart := models.Cart{}
-	database.DB.Create(&cart)
+	if err := database.DB.Create(&cart).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to create cart"})
+	}
 	return c.JSON(http.StatusCreated, cart)
 }
 
@@ -35,6 +37,9 @@ func AddCartItem(c echo.Context) error {
 	if err := c.Bind(&item); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
+	if item.ProductID == 0 || item.Quantity <= 0 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid cart item"})
+	}
 	item.CartID = cart.ID
 
 	var product models.Product
@@ -42,15 +47,20 @@ func AddCartItem(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Product not found"})
 	}
 
-	database.DB.Create(&item)
-	database.DB.Preload("Product").First(&item, item.ID)
+	if err := database.DB.Create(&item).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to add cart item"})
+	}
+	if err := database.DB.Preload("Product").First(&item, item.ID).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to load cart item"})
+	}
 	return c.JSON(http.StatusCreated, item)
 }
 
 func UpdateCartItem(c echo.Context) error {
+	cartID := c.Param("id")
 	itemID := c.Param("itemId")
 	var item models.CartItem
-	if err := database.DB.First(&item, itemID).Error; err != nil {
+	if err := database.DB.Where("cart_id = ?", cartID).First(&item, itemID).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Cart item not found"})
 	}
 
@@ -60,20 +70,30 @@ func UpdateCartItem(c echo.Context) error {
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
+	if input.Quantity <= 0 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid quantity"})
+	}
 
 	item.Quantity = input.Quantity
-	database.DB.Save(&item)
-	database.DB.Preload("Product").First(&item, item.ID)
+	if err := database.DB.Save(&item).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to update cart item"})
+	}
+	if err := database.DB.Preload("Product").First(&item, item.ID).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to load cart item"})
+	}
 	return c.JSON(http.StatusOK, item)
 }
 
 func DeleteCartItem(c echo.Context) error {
+	cartID := c.Param("id")
 	itemID := c.Param("itemId")
 	var item models.CartItem
-	if err := database.DB.First(&item, itemID).Error; err != nil {
+	if err := database.DB.Where("cart_id = ?", cartID).First(&item, itemID).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Cart item not found"})
 	}
-	database.DB.Delete(&item)
+	if err := database.DB.Delete(&item).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete cart item"})
+	}
 	return c.JSON(http.StatusNoContent, nil)
 }
 
@@ -83,7 +103,11 @@ func DeleteCart(c echo.Context) error {
 	if err := database.DB.First(&cart, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Cart not found"})
 	}
-	database.DB.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{})
-	database.DB.Delete(&cart)
+	if err := database.DB.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{}).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to clear cart"})
+	}
+	if err := database.DB.Delete(&cart).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete cart"})
+	}
 	return c.JSON(http.StatusNoContent, nil)
 }

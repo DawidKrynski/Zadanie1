@@ -35,7 +35,9 @@ func GetProducts(c echo.Context) error {
 		query = query.Scopes(scopes.Paginate(page, pageSize))
 	}
 
-	query.Find(&products)
+	if err := query.Find(&products).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to load products"})
+	}
 	return c.JSON(http.StatusOK, products)
 }
 
@@ -53,7 +55,9 @@ func CreateProduct(c echo.Context) error {
 	if err := c.Bind(&product); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
-	database.DB.Create(&product)
+	if err := database.DB.Create(&product).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to create product"})
+	}
 	return c.JSON(http.StatusCreated, product)
 }
 
@@ -66,7 +70,9 @@ func UpdateProduct(c echo.Context) error {
 	if err := c.Bind(&product); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
-	database.DB.Save(&product)
+	if err := database.DB.Save(&product).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to update product"})
+	}
 	return c.JSON(http.StatusOK, product)
 }
 
@@ -76,6 +82,8 @@ func DeleteProduct(c echo.Context) error {
 	if err := database.DB.First(&product, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "Product not found"})
 	}
-	database.DB.Delete(&product)
+	if err := database.DB.Delete(&product).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete product"})
+	}
 	return c.JSON(http.StatusNoContent, nil)
 }

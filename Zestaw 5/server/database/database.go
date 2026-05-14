@@ -9,12 +9,19 @@ import (
 
 var DB *gorm.DB
 
-func Init() {
+func Init() error {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("shop.db"), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		return err
 	}
 
-	DB.AutoMigrate(&models.Category{}, &models.Product{}, &models.Cart{}, &models.CartItem{})
+	return DB.AutoMigrate(
+		&models.Category{},
+		&models.Product{},
+		&models.Cart{},
+		&models.CartItem{},
+		&models.Order{},
+		&models.OrderItem{},
+	)
 }
