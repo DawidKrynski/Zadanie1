@@ -1,0 +1,9 @@
+client/node_modules/
+client/dist/
+client/.env
+client/.env.local
+server/shop.db
+server/server
+server/seed
+server/seed.exe
+server/server.exe
