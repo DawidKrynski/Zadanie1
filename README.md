@@ -12,3 +12,4 @@ Repozytorium zbiorcze z rozwiazaniami zadan.
 - [Zadanie 6 - testy Cypress + Go](Zestaw%206/README.md)
 - [Zadanie 7 - SonarCloud](Zestaw%207/README.md)
 - [Zadanie 8 - OAuth2](Zestaw%208/README.md)
+- [Zadanie 9 - osobny serwis ChatGPT](Zestaw%209/README.md)
