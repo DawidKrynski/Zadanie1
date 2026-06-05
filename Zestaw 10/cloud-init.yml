@@ -1,0 +1,11 @@
+#cloud-config
+package_update: true
+packages:
+  - ca-certificates
+  - curl
+  - git
+runcmd:
+  - curl -fsSL https://get.docker.com | sh
+  - systemctl enable --now docker
+  - git clone https://github.com/DawidKrynski/Zadanie1.git /opt/ebiznes-zadanie10
+  - cd /opt/ebiznes-zadanie10 && docker compose -f "Zestaw 10/docker-compose.cloud.yml" up -d --build

@@ -1,0 +1,15 @@
+services:
+  server:
+    build:
+      context: ../Zestaw 8/server
+    environment:
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://localhost:5173}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL:-http://localhost}
+      SERVER_BASE_URL: ${SERVER_BASE_URL:-http://localhost:8080}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
