@@ -13,3 +13,4 @@ Repozytorium zbiorcze z rozwiazaniami zadan.
 - [Zadanie 7 - SonarCloud](Zestaw%207/README.md)
 - [Zadanie 8 - OAuth2](Zestaw%208/README.md)
 - [Zadanie 9 - osobny serwis ChatGPT](Zestaw%209/README.md)
+- [Zadanie 10 - Docker w chmurze](Zestaw%2010/README.md)
